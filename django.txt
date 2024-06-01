@@ -1,0 +1,441 @@
+#Django
+
+Django is a framework of python used to built web applications
+
+#Setup a virtual environment as different project in django requires #different django version
+
+# to create virtual environment
+
+1. Create a new folder with required name
+2. Open the folder and right click and select "git bash here"
+3. enter pip freeze in the git bash
+4. In the latest versions of python the virtual environment are pre installed if you have a older version you can just type "pip intall virtualenv"
+5.To create virtual  environment type "python -m venv <environment_name(any name)>"
+6. To activate the virtual environment type "source <environment_name>/Scripts/activate>" (for mac replace Scripts with bin)
+7. type "pip freeze" again if the environment name is shown then your virtual environment is created.
+8. To deactive the virtual environment just type decactivate
+9. Now to install django type "pip install django".
+
+
+# To create a project
+
+1. Type django-admin startproject <folder_name> .  #the "." means to create the folder in the root
+2. To open code editor type "code ."
+3. After opening the code editor open the terminal and activate the virtual environment as mention above in point 6 of creating virtual environment. # if you are using powershell terminal dont type source i.e only type <environment_name>\Scripts\activate
+4. Now to start type "python manage.py runserver"
+
+#Below are the most used commands, frankly I dont understand these commands myself but after #diving deep into it more I will be explaining it in the future.
+
+5. To create of new app we type "python manage.py startapp <app_name>"
+6. To create a super user type "python manage.py createsuperuser"
+7. To change password type "python manage.py changepassword <your_user_name>
+8. To create tables type "python manage.py makemigrations".
+
+# we can see that manage.py is used in every commands.
+
+
+#Default configuration in Django
+
+#In settings.py
+1. SECRET_KEY - it should be kept in a safe environment
+2. DEBUG - always set it to False in production server only set it true in development server
+3. ALLOWED_HOST - put the domain name of the website where you want to run the project
+4. INSTALLED_APPS - app is a package with django modules and wherever we create an app in django project we register it in INSTALLED_APPS
+5. MIDDLEWARE - it contains various important function
+6. ROOT_URLCONF - it contains <Folder_name>.urls which means in the folder named <Folder_name> there consist a file urls.py
+7. TEMPLATES - renders frontend templates
+8. WSGI_APPLICATIOIN - it tells django where the wsgi(web server gateway interface) application should run 
+9. DATABASES - contains the database used
+10. AUTH_PASSWORD_VALIDATORS - used to check users passwords strength 
+11. USE_I18N - to turn on internationalization set it to true
+12. STATIC_URL - all the cs, js files used are static files
+
+
+
+#How Django works
+
+It follows MVT(Model view template) design patterns
+Model interacts with the database
+Templates acts as a user interface (html,bootstrap)
+View acts as a bridge between model and template sending the data model fetched from database to the templates
+
+for example a user wants to see his/her first name and last name so he\she accesses the django application. Django application is accessed through urls which are kept in a seperate file called urls.py in the root folder of the django application. 
+
+url pattern: path('profile/',views.profile) - which means in view module there is a function called profile
+
+path is a inbuilt function the first profile is the end point
+
+when any request comes it checks if the url pattern is present in the urls.py file if the pattern is present the it activates the corresponding function.
+After the function starts working it sends the logic to the model with the help of view. 
+The model checks if the data is present in the database if it is present it sends it to the view
+The view then sends the data to the template where the user can see the data
+
+
+#URL and HTTP responses
+1. go to urls.py
+2. in urlpatterns 
+	urlpattern = [
+		path('admin/', admin.site.urls),
+		path('home/', views.home),    
+ # 'home/' is a endpoint the we will add in the url while requesting the application if it is left blank eg "path('', views.home)" then the contents of the function will be shown in the default link that is given in the terminal 
+	]
+#create a file called views.py and import this file in the urls.py by typing 
+"from . import views"  
+
+3. In views.py create a function which takes request as parameter and returns HttpResponse
+
+	eg: def home(request):
+		return HttpResponse('Hello world')
+# import HttpResponse by typing "from django.http import HttpResponse" at the start of the code
+
+now activate the virtual environment and run the server as mentioned previosly. A link should pop at the terminal containing a IP adderess open that link and modify the link by adding /home at the end of the link.
+
+#we can also use html tags in the HttpResponse eg: return HttpResponse("<h3>Hello world</h3>")
+
+
+#Implement Django template
+1. Create a folder called templates in the root folder(outside the application folder).
+2. In the template folder create a file called home.html or any other html file which we will later render in the views.py file
+3.From the views.py file copy the html code written previously which was <h3>Hello world</h3> and paste it in the home.html file
+4. Now remove the HttpResponse function and replace it with render and place the parameter as request and the html file (the html files should be inside a quotation) 	
+		eg: def home(request):
+			return render(request,'home.html')
+
+remove the HttpResponse import and replace it with "from django.shortcuts import render"
+Also remember to save the file
+
+5. Go to settings.py 
+6. In the file there is a list named TEMPLATES and inside the TEMPLATES there is a item called 'DIRS':[] Now inside the big brackets type 'templates' which is the name of the directory/folder eg: 'DIRS': ['templates'] and save the file
+
+
+#we can also use html boiler plate by typing ! in the home.html file and press "Tab"
+
+#Implementing bootstrap 
+Include content delivery network in the project (CDN)
+Go to the bootstrap website and copy the two CDN and paste it in the home.html just before ending the head tag.
+
+To check if the bootstrap is working or not we can just paste a bootstrap code in the body tag. The bootstrap codes can be found in the documentations in the bootstrap website.
+
+
+#Configure static files in django
+1. Create a folder named inside the project folder.
+2. Inside the static folder we put all the static files such as css images javascript and so on.
+3. Create a folder named css and images inside the static folder.
+4. Create a style.css file inside the css folder and enter some css code also add a image inside the images folder.
+5. In the home.html use link tag to add the style.css file just below the bootstrap link tag before closing head.
+6. Use img tag to insert the image giving its path.
+7. Now in the settings.py file scroll down until you find STATIC_URL below it type 
+STATIC_ROOT = BASE_DIR /'static' 
+also below it type 
+		
+		STATICFILES_DIRS= [
+			'project_folder/static' #this is the path to static folder
+		]
+8. Now in the home.html file before the html tag starts type
+{% load static %}
+
+9. Also in the link tag in the href attribute type {% static 'css/style.css' %}
+Eg: <link rel="stylesheet" href="{% static 'css/style.css %}">
+
+10. For img tag : <img src="{% static 'images/pic.png' %}" alt="" width="400">
+
+# STATICFILES_DIRS contains the folder from which the static files are fetched in the html code
+
+
+#Django App
+1. To create an app type "python manage.py startapp employees(or any app name)".
+# apps are created for performing a certain feature
+
+admin.py -- used to display models in django admin panel
+apps.py -- created to help the user to add any application level configuration to the app.
+models.py -- contains the essential fields and behaviors of data that are stored in the database(important file)
+tests.py -- used to run test in the project
+views.py -- create bussiness logic for specific app
+
+
+#Django admin panels
+To access the admin panel we go to the urls.py file. Inside the file there is urlpatterns list and inside it there is path for admin.
+
+Note: if you change something in the files of static folder the changes may not be applied to the browser even after reload it this is due to caching to fix this in the browser press "ctrl+shift+R"
+
+To open the admin panel go to the url of server in the browser and add /admin where you kept /home
+
+In the admin panel we will see the login forms.
+But we dont have the login credentials yet. To get the login credentials we create a super user.
+
+To create super user go to the code editor/IDE and in the terminal close the server (press ctrl+c). After closing the server type "python manage.py createsuperuser"
+
+After hitting Enter we can the terminal prompting us for Username you can choose any name you wish currently lets write "djangoadmin".
+
+Next enter your email address and password.
+
+Now your super user account will be created. Then start the server and again go to the admin panel and enter the login credentials.
+
+
+#Creating a model(Database)
+In the settings.py there is a DATABASES dictionary
+
+for database we need tables and field which we create in the models.py file which is created by default in the application folder that we created previously.
+
+In models.py file create a class with argument models.Model
+	eg class Employee(models.Model)
+		first_name = models.CharField(max_length=100)
+		last_name = models.CharField(max_length=100)
+		photo = models.ImageField(upload_to='images')
+		designation = models.CharField(max_length=100)
+		email_address = models.EmailField(max_length=100, unique=True)
+#we set unique to True for the email address to be unique for every users
+		
+		phone_number = models.CharField(max_length=12, blank=True) 
+#blank=True means that this field is optional and the other fields are mandatory.
+		
+		created_at = models.DataTimeField(auto_now_add=True)  
+#used to keep track of when this data was created. auto_now_add is good for one time use
+		
+		updated_at = models.DateTimeField(auto_now=True)
+ # used to keep track of when the data was updated
+
+
+#Migration
+Goto the settings.py and inside the INSTALLED_APPS list add 'employees' (or your app name)
+We do this step immediately after creating a new app.
+
+now go to terminal and install a module Pillow by typing "pip install Pillow"
+After installing Pillow  type "python manage.py makemigrations".
+The above code will take the models which we created previously to the migratiions folder and make a file named 0001_inital.py which is a migration file.
+"makemigrations" command reads the models.py file check for any updates in the file a creates a migration file with SQL commands
+
+Now to make the database table/execute the SQL commands in the database type "python manage.py migrate" in the terminal
+"migrate" command executes the SQL command which is created by "makemigrations" command
+
+Now in the application folder go to the admin.py file and register the model by typing
+"admin.site.register(Employee)". Before that import the Employee model in the file by typing 
+"from .models import Employee"
+Now in admin panel there should be a tab called Employee.
+Try adding a employee
+When we try to see the employee details the image will not show
+This is because we have not configured the media files.
+
+#Django Media Files
+When we added an image in the admin folder for the employee a folder called images should have been formed.
+Delete that image folder and create a new forder called media inside the root folder.
+Now go to the settings.py file and at the end of the file add the media configurations
+
+MEDIA_URL ='/media/'
+MEDIA_ROOT = BASE_DIR/ 'media'
+
+what the above configuration does is that when we add image in the images folder in the model through the admin panel it creates the images folder inside the media folder
+
+Now go the urls.py file.
+In there after the urlpatterns list type
+
+	urlpatterns=[
+		...
+	] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+Also import settings and static
+from django.conf import settings
+from django.conf.urls.static import static
+
+
+When we add a user in the table we see Employee(1) which is not a good way of representing a user so to fix that go to the models.py file.
+inside the Employee(or the class you have created) class add a function
+
+def __str__(self):
+	return self.first_name;
+
+#Fetch Data from the Database
+Now that we have saved our data in our database ,we want to show the data in the homepage.
+
+Go to the views.py file where we kept the home.html.
+in the home function we add a code : employees = Employee.objects.all()
+and print the employees variable : print(employees) #this will print the data in the terminal.
+
+For showing the data in the homepage we add a context dictionary:
+		
+		context= {
+		   'employees': employees, 		
+		} 
+also add the context in the render function
+
+The complete code:
+
+def home(request):
+	employees = Employee.object.all()
+	context{
+	   'employees':employees,
+	}
+	
+	return render(request,'home.html',context)
+
+Also we need to import the model so we type :
+ "from employees.models import Employee"
+at the start of the code
+
+Now in the home.html file inside the body tag add {{employees}} and run the server
+But as you can see the website it wont be that apealing as some syntax are also shown in the frontend.
+
+So instead of writing {{employees}} we use for loop:
+
+{% for i in employees %}
+	<h4>{{ i }}</h4>
+{% endfor %}
+
+the {% %} tag are templates tags 
+Inside these tag we can write code in python code or any other logic like if else conditions.
+The double curly braces {{}} are the template variables 
+They are used to print python variables in the html template.
+
+#Fetching the data inside the table
+Now that we have fetched our data in the home page. We need to show that data in a structured form.
+For we that we use table.
+We are going to put the data which we have fetched inside a table in the homepage.
+For that we need to make a table.
+We previously made a table using bootstrap. If you have deleted the table already you can just copy the code in the bootstrap website.
+
+First we remove the for loop we previously used in the home.html file.
+
+Now that you have added a table delete the rows until only 1 row remains excluding the heading rows.
+
+In the column i.e <th> tag change the names of the columns for eg
+<th scope="col">ID</th>
+<th scope="col">Full name</th> and so on.
+Just put the name of the data which we have stored in the database previously.
+
+now keep the <tr> tag inside a for loop (note: not the <tr> tag that contains the column name)
+
+for that:
+
+{% for emp in employee %}
+<tr>
+ <th scope="row">{{ emp.id }}</th>
+ #django will automatically give an to the data which we have created
+ <td scope="row">{{ emp.first_name }} {{empt.last_name}}</td>
+# the first_name and last_name are the variables that we created in the models.py file to make the database model
+ <td scope="row">{{ emp.designation }}</td>
+ <td scope="row">{{ emp.phone_number }}</td>
+</tr>
+{% endfor %}
+
+
+
+#Fetch Employee Detail View
+Now that we have fetched data from the database and kept the data inside a table, we have show the full information of the employee in the django webpage as we only added some of the data inside the table.
+
+The idea is that if we add the id number in the url of the website like 127.0.0.1:8000/employees/1
+then the information of the employee which corresponds with the id should show up.
+
+For that first lets go to the urls.py file in the mysite folder(or the name of the folder you created while starting up as admin at first)
+
+Now in the urls.py file there is a list called urlpatterns. In that list add a new path
+
+path('employees/', include('employees.urls')),
+
+dont forget to leave a comma(,) at the end.
+In the above code 'employees/' means the path that will be added in the url in the browser to go the specific page.
+
+include() is a function which forwards the request to the urls.py file(which we will have to create in the employees folder) which is located in the employees folder.
+also import include module:
+
+from django.urls import path, include (the path module will be there by default just add comma and include(,include)
+
+Now create a file called urls.py in the employees application/folder
+In that file input this code:
+
+from django.urls import path
+from . import views
+
+urlpattern =[
+	path('<int:empid>/',views.employee_detail),
+]
+
+The above code is similar to the urls.py in the project folder the only difference is the
+<int:empid> which is basically a integer variable named empid which is also the primary key that corresponds with the database.
+
+Now go to the views.py file  in the application folder and write this code:
+
+from django.http import Http404
+from django.shortcuts import render
+from employees.models import Employee
+
+def employee_detail(request,empid):  
+	try:
+		employees=Employee.object.get(empid=empid)
+		print(employees)
+	except:
+		raise Http404
+
+#In the above code the parameter empid is fetched when the user enters the url to see the employee details of a particular id. In the try block: a variable is created in which the employee details will be added if the given employee id is present in the database. Otherwise it will go in the except block which will throw an error a Not found error.
+
+When we run the above code we can see the results in the terminal which gives us the name of the employee.But, the above code is too long. We can shorten the code by using the following code:
+
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+
+def employee_detail(request, pk)
+	employee=get_object_or_404(Employee,pk=pk) #pk is the primary key
+	return HttpResponse(employee)
+
+In the above code the get_object_or_404() function fetches the data if the id is present else it returns not found error.
+
+The HttpResponse() function shows the data in the webpage which is name of the employee
+
+#Employee Detail Page
+Now that we have fetched the data from the database in another webpage other than the home page. We should make it look more attractive and insert the full detail of the employee.
+For that , remove the "return HttpResponse(employee)" code and write:
+
+return render(request,'employee_detail.html',context)
+
+As we have not created the context dictionary as we did previously lets make a context dictionary right above the "return statement"
+
+	context = {
+		'employee' = employee
+	}
+
+Note: the employee inside the quot('') is the key i.e the name which are going to use in the html file and the employeee without the quot is the value that we fetched using the 
+get_object_or_404() function.
+
+Also dont forget to import render
+
+Now we create the "employee_detail.html" file and copy and paste the same code from home.html
+After that we remove the table and intead of the table we add a card.
+For that simply search in bootstrap about card and various codes will show up. Just pick one of the code and copy and paste it. 
+Now a card will show up in the webpage.
+If you dont like the placement of the card just add 'mx-auto' in the class of the div tag.
+There should be a <p> tag inside the card div.
+Just remove the text inside the <p> tag and instead of that add
+
+	<p class="text-card m-0"> {{employee.first_name}}  {{employee.first_name}} </p>
+	<p class="text-card m-0"> {{employee.designation}}</p>
+	<p class="text-card m-0"> {{employee.email}}</p>
+	<p class="text-card m-0"> {{employee.phone_number}}</p>
+
+Now in the image tag add the src attribute as:
+	<img class="card-img-top" src= "{{employee.photo.url}} " alt="Employee photo">
+
+Now save the file and refresh the webpage the card will show up having all the details.
+
+Also add the a button inside the card division by adding:
+<a href="{% url 'home' %}" class="btn btn-primary">Back to home</a>
+
+In the href attribute we have {% url 'home' %} which means when we click this button the url for home.html will trigger.
+Now you may be thinking where did this 'home' come from? Actually we have to add this name inside our path in the urls.py file of the project folder. This is done by:
+
+path('', views.home.html, name='home')
+
+We just added name = 'home' in the already set up path
+
+Now when we click the back to home button we go to the home page
+
+Now that we know how to use the button , we can apply the same logic in the home page in the table
+i.e after clicking the name the details of the employee will show up.
+
+for that go to home.html file
+from there put the {{emp.first_name}} {{emp.last_name}} inside the <a> tag :
+
+<a href="{% url 'employee_detail' emp.id %}" style="text-decoration:none"> {{emp.first_name}} {{emp.last_name}}</a>
+
+the style attribute removes the underline and the blue text that comes using the anchor/<a> tag.
+Now same as before put the name 'employee_detail' inside the path but this time in urls.py file of the application folder.
+
+
